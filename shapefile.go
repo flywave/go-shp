@@ -1,5 +1,11 @@
 package shp
 
+import (
+	"fmt"
+
+	"github.com/flywave/go-geom"
+)
+
 type ShapeType int
 
 const (
@@ -122,6 +128,9 @@ func (f *ShapeFile) Close() {
 }
 
 func (f *ShapeFile) Shape(shapeIndex int) *Shape {
+	if shapeIndex >= f.ShapeCount {
+		return nil
+	}
 	s := SHPReadObject(f.hShape, shapeIndex)
 	defer SHPDestroyObject(s)
 
@@ -144,18 +153,21 @@ func (f *ShapeFile) Shape(shapeIndex int) *Shape {
 				return vertices
 			}()
 
+			if s.NParts == 0 {
+				return []Part{{Vertices: vertices}}
+			}
+
 			parts := make([]Part, s.NParts)
-			for i := 1; i < len(parts); i++ { // if len >= 2
+			for i := 1; i < len(parts); i++ {
 				parts[i-1].Type = PartType(GetInt(s.PanPartType, i-1))
 				start := GetInt(s.PanPartStart, i-1)
 				end := GetInt(s.PanPartStart, i)
 				if end > len(vertices) {
-					end = len(vertices) // fix bad format
+					end = len(vertices)
 				}
 				if start < len(vertices) {
 					parts[i-1].Vertices = vertices[start:end]
 				} else {
-					// Bad format, Why?
 					return parts
 				}
 			}
@@ -166,7 +178,6 @@ func (f *ShapeFile) Shape(shapeIndex int) *Shape {
 				if start < len(vertices) {
 					parts[last].Vertices = vertices[start:]
 				} else {
-					// Bad format, Why?
 					return parts
 				}
 			}
@@ -190,4 +201,18 @@ func (f *ShapeFile) Shape(shapeIndex int) *Shape {
 			return attrs
 		}(),
 	}
+}
+
+func (f *ShapeFile) Feature(shapeIndex int) *geom.Feature {
+	defer func() {
+		if p := recover(); p != nil {
+			fmt.Printf("panic: %s\n", p)
+		}
+	}()
+	shp := f.Shape(shapeIndex)
+	if shp == nil {
+		return nil
+	}
+	feat := shpToGeomFeature(shp)
+	return feat
 }

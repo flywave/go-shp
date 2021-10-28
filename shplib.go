@@ -1,6 +1,10 @@
 package shp
 
 /*
+#cgo linux LDFLAGS: -L ./  -Wl,--start-group  -lm -Wl,--end-group
+#cgo darwin LDFLAGS: -L /  -lm
+#cgo darwin,arm LDFLAGS: -L / -lm
+#cgo windows LDFLAGS: -L ./  -lm -fPIC
 #include <shapefil.h>
 #include <string.h>
 #include <stdlib.h>
@@ -66,9 +70,6 @@ func SHPDestroyObject(o *SHPObject) {
 	C.SHPDestroyObject((*C.SHPObject)(unsafe.Pointer(o)))
 }
 
-// ----------------------------------------------------------
-// DBF
-
 func DBFOpen(filename, mode string) DBFHandle {
 	filename_, mode_ := C.CString(filename), C.CString(mode)
 	defer C.free(unsafe.Pointer(filename_))
@@ -88,7 +89,6 @@ func DBFGetRecordCount(h DBFHandle) int {
 	return int(C.DBFGetRecordCount(h))
 }
 
-// ??
 func DBFGetFieldIndex(h DBFHandle, fieldName string) int {
 	fieldName_ := C.CString(fieldName)
 	defer C.free(unsafe.Pointer(fieldName_))
