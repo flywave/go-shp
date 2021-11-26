@@ -90,7 +90,7 @@ static void SADError(const char *message) {
     fprintf(stderr, "%s\n", message);
 }
 
-void SASetupDefaultHooks(SAHooks *psHooks) {
+void goSASetupDefaultHooks(SAHooks *psHooks) {
     psHooks->FOpen   = SADFOpen;
     psHooks->FRead   = SADFRead;
     psHooks->FWrite  = SADFWrite;

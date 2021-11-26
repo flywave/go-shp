@@ -57,7 +57,7 @@ extern "C" {
 /************************************************************************/
 
 /* -------------------------------------------------------------------- */
-/*      Should the DBFReadStringAttribute() strip leading and           */
+/*      Should the goDBFReadStringAttribute() strip leading and           */
 /*      trailing white space?                                           */
 /* -------------------------------------------------------------------- */
 #define TRIM_DBF_WHITESPACE
@@ -163,7 +163,7 @@ typedef struct {
     double     (*Atof)  ( const char *str );
 } SAHooks;
 
-void SHPAPI_CALL SASetupDefaultHooks( SAHooks *psHooks );
+void SHPAPI_CALL goSASetupDefaultHooks( SAHooks *psHooks );
 #ifdef SHPAPI_UTF8_HOOKS
 void SHPAPI_CALL SASetupUtf8Hooks( SAHooks *psHooks );
 #endif
@@ -276,64 +276,64 @@ struct tagSHPObject
 /* If pszAccess is read-only, the fpSHX field of the returned structure */
 /* will be NULL as it is not necessary to keep the SHX file open */
 SHPHandle SHPAPI_CALL
-      SHPOpen( const char * pszShapeFile, const char * pszAccess );
+      goSHPOpen( const char * pszShapeFile, const char * pszAccess );
 SHPHandle SHPAPI_CALL
-      SHPOpenLL( const char *pszShapeFile, const char *pszAccess,
+      goSHPOpenLL( const char *pszShapeFile, const char *pszAccess,
                  SAHooks *psHooks );
 SHPHandle SHPAPI_CALL
-      SHPOpenLLEx( const char *pszShapeFile, const char *pszAccess,
+      goSHPOpenLLEx( const char *pszShapeFile, const char *pszAccess,
                   SAHooks *psHooks, int bRestoreSHX );
 
 int SHPAPI_CALL
-      SHPRestoreSHX( const char *pszShapeFile, const char *pszAccess,
+      goSHPRestoreSHX( const char *pszShapeFile, const char *pszAccess,
                   SAHooks *psHooks );
 
-/* If setting bFastMode = TRUE, the content of SHPReadObject() is owned by the SHPHandle. */
-/* So you cannot have 2 valid instances of SHPReadObject() simultaneously. */
+/* If setting bFastMode = TRUE, the content of goSHPReadObject() is owned by the SHPHandle. */
+/* So you cannot have 2 valid instances of goSHPReadObject() simultaneously. */
 /* The SHPObject padfZ and padfM members may be NULL depending on the geometry */
 /* type. It is illegal to free at hand any of the pointer members of the SHPObject structure */
-void SHPAPI_CALL SHPSetFastModeReadObject( SHPHandle hSHP, int bFastMode );
+void SHPAPI_CALL goSHPSetFastModeReadObject( SHPHandle hSHP, int bFastMode );
 
 SHPHandle SHPAPI_CALL
-      SHPCreate( const char * pszShapeFile, int nShapeType );
+      goSHPCreate( const char * pszShapeFile, int nShapeType );
 SHPHandle SHPAPI_CALL
-      SHPCreateLL( const char * pszShapeFile, int nShapeType,
+      goSHPCreateLL( const char * pszShapeFile, int nShapeType,
                    SAHooks *psHooks );
 void SHPAPI_CALL
-      SHPGetInfo( SHPHandle hSHP, int * pnEntities, int * pnShapeType,
+      goSHPGetInfo( SHPHandle hSHP, int * pnEntities, int * pnShapeType,
                   double * padfMinBound, double * padfMaxBound );
 
 SHPObject SHPAPI_CALL1(*)
-      SHPReadObject( SHPHandle hSHP, int iShape );
+      goSHPReadObject( SHPHandle hSHP, int iShape );
 int SHPAPI_CALL
-      SHPWriteObject( SHPHandle hSHP, int iShape, SHPObject * psObject );
+      goSHPWriteObject( SHPHandle hSHP, int iShape, SHPObject * psObject );
 
 void SHPAPI_CALL
-      SHPDestroyObject( SHPObject * psObject );
+      goSHPDestroyObject( SHPObject * psObject );
 void SHPAPI_CALL
-      SHPComputeExtents( SHPObject * psObject );
+      goSHPComputeExtents( SHPObject * psObject );
 SHPObject SHPAPI_CALL1(*)
-      SHPCreateObject( int nSHPType, int nShapeId, int nParts,
+      goSHPCreateObject( int nSHPType, int nShapeId, int nParts,
                        const int * panPartStart, const int * panPartType,
                        int nVertices,
                        const double * padfX, const double * padfY,
                        const double * padfZ, const double * padfM );
 SHPObject SHPAPI_CALL1(*)
-      SHPCreateSimpleObject( int nSHPType, int nVertices,
+      goSHPCreateSimpleObject( int nSHPType, int nVertices,
                              const double * padfX,
                              const double * padfY,
                              const double * padfZ );
 
 int SHPAPI_CALL
-      SHPRewindObject( SHPHandle hSHP, SHPObject * psObject );
+      goSHPRewindObject( SHPHandle hSHP, SHPObject * psObject );
 
-void SHPAPI_CALL SHPClose( SHPHandle hSHP );
-void SHPAPI_CALL SHPWriteHeader( SHPHandle hSHP );
+void SHPAPI_CALL goSHPClose( SHPHandle hSHP );
+void SHPAPI_CALL goSHPWriteHeader( SHPHandle hSHP );
 
 const char SHPAPI_CALL1(*)
-      SHPTypeName( int nSHPType );
+      goSHPTypeName( int nSHPType );
 const char SHPAPI_CALL1(*)
-      SHPPartTypeName( int nPartType );
+      goSHPPartTypeName( int nPartType );
 
 /* -------------------------------------------------------------------- */
 /*      Shape quadtree indexing API.                                    */
@@ -360,7 +360,7 @@ typedef struct shape_tree_node
     int         nSubNodes;
     struct shape_tree_node *apsSubNode[MAX_SUBNODE];
 
-} SHPTreeNode;
+} goSHPTreeNode;
 
 typedef struct
 {
@@ -370,55 +370,55 @@ typedef struct
     int         nDimension;
     int         nTotalCount;
 
-    SHPTreeNode *psRoot;
+    goSHPTreeNode *psRoot;
 } SHPTree;
 
 SHPTree SHPAPI_CALL1(*)
-      SHPCreateTree( SHPHandle hSHP, int nDimension, int nMaxDepth,
+      goSHPCreateTree( SHPHandle hSHP, int nDimension, int nMaxDepth,
                      double *padfBoundsMin, double *padfBoundsMax );
 void SHPAPI_CALL
-      SHPDestroyTree( SHPTree * hTree );
+      goSHPDestroyTree( SHPTree * hTree );
 
 int SHPAPI_CALL
-      SHPWriteTree( SHPTree *hTree, const char * pszFilename );
+      goSHPWriteTree( SHPTree *hTree, const char * pszFilename );
 
 int SHPAPI_CALL
-      SHPTreeAddShapeId( SHPTree * hTree, SHPObject * psObject );
+      goSHPTreeAddShapeId( SHPTree * hTree, SHPObject * psObject );
 int SHPAPI_CALL
-      SHPTreeRemoveShapeId( SHPTree * hTree, int nShapeId );
+      goSHPTreeRemoveShapeId( SHPTree * hTree, int nShapeId );
 
 void SHPAPI_CALL
-      SHPTreeTrimExtraNodes( SHPTree * hTree );
+      goSHPTreeTrimExtraNodes( SHPTree * hTree );
 
 int SHPAPI_CALL1(*)
-      SHPTreeFindLikelyShapes( SHPTree * hTree,
+      goSHPTreeFindLikelyShapes( SHPTree * hTree,
                                double * padfBoundsMin,
                                double * padfBoundsMax,
                                int * );
 int SHPAPI_CALL
-      SHPCheckBoundsOverlap( double *, double *, double *, double *, int );
+      goSHPCheckBoundsOverlap( double *, double *, double *, double *, int );
 
 int SHPAPI_CALL1(*)
-SHPSearchDiskTree( FILE *fp,
+goSHPSearchDiskTree( FILE *fp,
                    double *padfBoundsMin, double *padfBoundsMax,
                    int *pnShapeCount );
 
-typedef struct SHPDiskTreeInfo* SHPTreeDiskHandle;
+typedef struct SHPDiskTreeInfo* goSHPTreeDiskHandle;
 
-SHPTreeDiskHandle SHPAPI_CALL
-    SHPOpenDiskTree( const char* pszQIXFilename,
+goSHPTreeDiskHandle SHPAPI_CALL
+    goSHPOpenDiskTree( const char* pszQIXFilename,
                      SAHooks *psHooks );
 
 void SHPAPI_CALL
-    SHPCloseDiskTree( SHPTreeDiskHandle hDiskTree );
+    goSHPCloseDiskTree( goSHPTreeDiskHandle hDiskTree );
 
 int SHPAPI_CALL1(*)
-SHPSearchDiskTreeEx( SHPTreeDiskHandle hDiskTree,
+goSHPSearchDiskTreeEx( goSHPTreeDiskHandle hDiskTree,
                      double *padfBoundsMin, double *padfBoundsMax,
                      int *pnShapeCount );
 
 int SHPAPI_CALL
-    SHPWriteTreeLL(SHPTree *hTree, const char *pszFilename, SAHooks *psHooks );
+    goSHPWriteTreeLL(SHPTree *hTree, const char *pszFilename, SAHooks *psHooks );
 
 /* -------------------------------------------------------------------- */
 /*      SBN Search API                                                  */
@@ -427,23 +427,23 @@ int SHPAPI_CALL
 typedef struct SBNSearchInfo* SBNSearchHandle;
 
 SBNSearchHandle SHPAPI_CALL
-    SBNOpenDiskTree( const char* pszSBNFilename,
+    goSBNOpenDiskTree( const char* pszSBNFilename,
                  SAHooks *psHooks );
 
 void SHPAPI_CALL
-    SBNCloseDiskTree( SBNSearchHandle hSBN );
+    goSBNCloseDiskTree( SBNSearchHandle hSBN );
 
 int SHPAPI_CALL1(*)
-SBNSearchDiskTree( SBNSearchHandle hSBN,
+goSBNSearchDiskTree( SBNSearchHandle hSBN,
                    double *padfBoundsMin, double *padfBoundsMax,
                    int *pnShapeCount );
 
 int SHPAPI_CALL1(*)
-SBNSearchDiskTreeInteger( SBNSearchHandle hSBN,
+goSBNSearchDiskTreeInteger( SBNSearchHandle hSBN,
                           int bMinX, int bMinY, int bMaxX, int bMaxY,
                           int *pnShapeCount );
 
-void SHPAPI_CALL SBNSearchFreeIds( int* panShapeId );
+void SHPAPI_CALL goSBNSearchFreeIds( int* panShapeId );
 
 /************************************************************************/
 /*                             DBF Support.                             */
@@ -517,101 +517,101 @@ typedef enum {
 #define XBASE_FLD_MAX_WIDTH     255
 
 DBFHandle SHPAPI_CALL
-      DBFOpen( const char * pszDBFFile, const char * pszAccess );
+      goDBFOpen( const char * pszDBFFile, const char * pszAccess );
 DBFHandle SHPAPI_CALL
-      DBFOpenLL( const char * pszDBFFile, const char * pszAccess,
+      goDBFOpenLL( const char * pszDBFFile, const char * pszAccess,
                  SAHooks *psHooks );
 DBFHandle SHPAPI_CALL
-      DBFCreate( const char * pszDBFFile );
+      goDBFCreate( const char * pszDBFFile );
 DBFHandle SHPAPI_CALL
-      DBFCreateEx( const char * pszDBFFile, const char * pszCodePage );
+      goDBFCreateEx( const char * pszDBFFile, const char * pszCodePage );
 DBFHandle SHPAPI_CALL
-      DBFCreateLL( const char * pszDBFFile, const char * pszCodePage, SAHooks *psHooks );
+      goDBFCreateLL( const char * pszDBFFile, const char * pszCodePage, SAHooks *psHooks );
 
 int SHPAPI_CALL
-      DBFGetFieldCount( DBFHandle psDBF );
+      goDBFGetFieldCount( DBFHandle psDBF );
 int SHPAPI_CALL
-      DBFGetRecordCount( DBFHandle psDBF );
+      goDBFGetRecordCount( DBFHandle psDBF );
 int SHPAPI_CALL
-      DBFAddField( DBFHandle hDBF, const char * pszFieldName,
+      goDBFAddField( DBFHandle hDBF, const char * pszFieldName,
                    DBFFieldType eType, int nWidth, int nDecimals );
 
 int SHPAPI_CALL
-      DBFAddNativeFieldType( DBFHandle hDBF, const char * pszFieldName,
+      goDBFAddNativeFieldType( DBFHandle hDBF, const char * pszFieldName,
                              char chType, int nWidth, int nDecimals );
 
 int SHPAPI_CALL
-      DBFDeleteField( DBFHandle hDBF, int iField );
+      goDBFDeleteField( DBFHandle hDBF, int iField );
 
 int SHPAPI_CALL
-      DBFReorderFields( DBFHandle psDBF, int* panMap );
+      goDBFReorderFields( DBFHandle psDBF, int* panMap );
 
 int SHPAPI_CALL
-      DBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
+      goDBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
                          char chType, int nWidth, int nDecimals );
 
 DBFFieldType SHPAPI_CALL
-      DBFGetFieldInfo( DBFHandle psDBF, int iField,
+      goDBFGetFieldInfo( DBFHandle psDBF, int iField,
                        char * pszFieldName, int * pnWidth, int * pnDecimals );
 
 int SHPAPI_CALL
-      DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName);
+      goDBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName);
 
 int SHPAPI_CALL
-      DBFReadIntegerAttribute( DBFHandle hDBF, int iShape, int iField );
+      goDBFReadIntegerAttribute( DBFHandle hDBF, int iShape, int iField );
 double SHPAPI_CALL
-      DBFReadDoubleAttribute( DBFHandle hDBF, int iShape, int iField );
+      goDBFReadDoubleAttribute( DBFHandle hDBF, int iShape, int iField );
 const char SHPAPI_CALL1(*)
-      DBFReadStringAttribute( DBFHandle hDBF, int iShape, int iField );
+      goDBFReadStringAttribute( DBFHandle hDBF, int iShape, int iField );
 const char SHPAPI_CALL1(*)
-      DBFReadLogicalAttribute( DBFHandle hDBF, int iShape, int iField );
+      goDBFReadLogicalAttribute( DBFHandle hDBF, int iShape, int iField );
 int SHPAPI_CALL
-      DBFIsAttributeNULL( DBFHandle hDBF, int iShape, int iField );
+      goDBFIsAttributeNULL( DBFHandle hDBF, int iShape, int iField );
 
 int SHPAPI_CALL
-      DBFWriteIntegerAttribute( DBFHandle hDBF, int iShape, int iField,
+      goDBFWriteIntegerAttribute( DBFHandle hDBF, int iShape, int iField,
                                 int nFieldValue );
 int SHPAPI_CALL
-      DBFWriteDoubleAttribute( DBFHandle hDBF, int iShape, int iField,
+      goDBFWriteDoubleAttribute( DBFHandle hDBF, int iShape, int iField,
                                double dFieldValue );
 int SHPAPI_CALL
-      DBFWriteStringAttribute( DBFHandle hDBF, int iShape, int iField,
+      goDBFWriteStringAttribute( DBFHandle hDBF, int iShape, int iField,
                                const char * pszFieldValue );
 int SHPAPI_CALL
-     DBFWriteNULLAttribute( DBFHandle hDBF, int iShape, int iField );
+     goDBFWriteNULLAttribute( DBFHandle hDBF, int iShape, int iField );
 
 int SHPAPI_CALL
-     DBFWriteLogicalAttribute( DBFHandle hDBF, int iShape, int iField,
+     goDBFWriteLogicalAttribute( DBFHandle hDBF, int iShape, int iField,
                                const char lFieldValue);
 int SHPAPI_CALL
-     DBFWriteAttributeDirectly(DBFHandle psDBF, int hEntity, int iField,
+     goDBFWriteAttributeDirectly(DBFHandle psDBF, int hEntity, int iField,
                                void * pValue );
 const char SHPAPI_CALL1(*)
-      DBFReadTuple(DBFHandle psDBF, int hEntity );
+      goDBFReadTuple(DBFHandle psDBF, int hEntity );
 int SHPAPI_CALL
-      DBFWriteTuple(DBFHandle psDBF, int hEntity, void * pRawTuple );
+      goDBFWriteTuple(DBFHandle psDBF, int hEntity, void * pRawTuple );
 
-int SHPAPI_CALL DBFIsRecordDeleted( DBFHandle psDBF, int iShape );
-int SHPAPI_CALL DBFMarkRecordDeleted( DBFHandle psDBF, int iShape,
+int SHPAPI_CALL goDBFIsRecordDeleted( DBFHandle psDBF, int iShape );
+int SHPAPI_CALL goDBFMarkRecordDeleted( DBFHandle psDBF, int iShape,
                                       int bIsDeleted );
 
 DBFHandle SHPAPI_CALL
-      DBFCloneEmpty(DBFHandle psDBF, const char * pszFilename );
+      goDBFCloneEmpty(DBFHandle psDBF, const char * pszFilename );
 
 void SHPAPI_CALL
-      DBFClose( DBFHandle hDBF );
+      goDBFClose( DBFHandle hDBF );
 void    SHPAPI_CALL
-      DBFUpdateHeader( DBFHandle hDBF );
+      goDBFUpdateHeader( DBFHandle hDBF );
 char SHPAPI_CALL
-      DBFGetNativeFieldType( DBFHandle hDBF, int iField );
+      goDBFGetNativeFieldType( DBFHandle hDBF, int iField );
 
 const char SHPAPI_CALL1(*)
-      DBFGetCodePage(DBFHandle psDBF );
+      goDBFGetCodePage(DBFHandle psDBF );
 
 void SHPAPI_CALL
-    DBFSetLastModifiedDate( DBFHandle psDBF, int nYYSince1900, int nMM, int nDD );
+    goDBFSetLastModifiedDate( DBFHandle psDBF, int nYYSince1900, int nMM, int nDD );
 
-void SHPAPI_CALL DBFSetWriteEndOfFileChar( DBFHandle psDBF, int bWriteFlag );
+void SHPAPI_CALL goDBFSetWriteEndOfFileChar( DBFHandle psDBF, int bWriteFlag );
 
 #ifdef __cplusplus
 }

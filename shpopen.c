@@ -117,16 +117,16 @@ static void SwapWord( int length, void * wordP ) {
 }
 
 /************************************************************************/
-/*                          SHPWriteHeader()                            */
+/*                          goSHPWriteHeader()                            */
 /*                                                                      */
 /*      Write out a header for the .shp and .shx files as well as the	*/
 /*	contents of the index (.shx) file.				*/
 /************************************************************************/
 
-void SHPAPI_CALL SHPWriteHeader( SHPHandle psSHP ) {
+void SHPAPI_CALL goSHPWriteHeader( SHPHandle psSHP ) {
     if (psSHP->fpSHX == SHPLIB_NULLPTR)
     {
-        psSHP->sHooks.Error( "SHPWriteHeader failed : SHX file is closed");
+        psSHP->sHooks.Error( "goSHPWriteHeader failed : SHX file is closed");
         return;
     }
 
@@ -256,16 +256,16 @@ void SHPAPI_CALL SHPWriteHeader( SHPHandle psSHP ) {
 }
 
 /************************************************************************/
-/*                              SHPOpen()                               */
+/*                              goSHPOpen()                               */
 /************************************************************************/
 
 SHPHandle SHPAPI_CALL
-SHPOpen( const char * pszLayer, const char * pszAccess ){
+goSHPOpen( const char * pszLayer, const char * pszAccess ){
     SAHooks sHooks;
 
-    SASetupDefaultHooks( &sHooks );
+    goSASetupDefaultHooks( &sHooks );
 
-    return SHPOpenLL( pszLayer, pszAccess, &sHooks );
+    return goSHPOpenLL( pszLayer, pszAccess, &sHooks );
 }
 
 /************************************************************************/
@@ -288,14 +288,14 @@ static int SHPGetLenWithoutExtension(const char* pszBasename)
 }
 
 /************************************************************************/
-/*                              SHPOpen()                               */
+/*                              goSHPOpen()                               */
 /*                                                                      */
 /*      Open the .shp and .shx files based on the basename of the       */
 /*      files or either file name.                                      */
 /************************************************************************/
 
 SHPHandle SHPAPI_CALL
-SHPOpenLL( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
+goSHPOpenLL( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
 /* -------------------------------------------------------------------- */
 /*      Ensure the access string is one of the legal ones.  We          */
 /*      ensure the result string indicates binary to avoid common       */
@@ -597,7 +597,7 @@ SHPOpenLL( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
             str[sizeof(str)-1] = '\0';
 
             psSHP->sHooks.Error( str );
-            SHPClose(psSHP);
+            goSHPClose(psSHP);
             free( pabyBuf );
             return SHPLIB_NULLPTR;
         }
@@ -609,7 +609,7 @@ SHPOpenLL( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
             str[sizeof(str)-1] = '\0';
 
             psSHP->sHooks.Error( str );
-            SHPClose(psSHP);
+            goSHPClose(psSHP);
             free( pabyBuf );
             return SHPLIB_NULLPTR;
         }
@@ -622,22 +622,22 @@ SHPOpenLL( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
 }
 
 /************************************************************************/
-/*                              SHPOpenLLEx()                           */
+/*                              goSHPOpenLLEx()                           */
 /*                                                                      */
 /*      Open the .shp and .shx files based on the basename of the       */
-/*      files or either file name. It generally invokes SHPRestoreSHX() */
+/*      files or either file name. It generally invokes goSHPRestoreSHX() */
 /*      in case when bRestoreSHX equals true.                           */
 /************************************************************************/
 
 SHPHandle SHPAPI_CALL
-SHPOpenLLEx( const char * pszLayer, const char * pszAccess, SAHooks *psHooks,
+goSHPOpenLLEx( const char * pszLayer, const char * pszAccess, SAHooks *psHooks,
             int bRestoreSHX ) {
-    if ( !bRestoreSHX ) return SHPOpenLL ( pszLayer, pszAccess, psHooks );
+    if ( !bRestoreSHX ) return goSHPOpenLL ( pszLayer, pszAccess, psHooks );
     else
     {
-        if ( SHPRestoreSHX ( pszLayer, pszAccess, psHooks ) )
+        if ( goSHPRestoreSHX ( pszLayer, pszAccess, psHooks ) )
         {
-            return SHPOpenLL ( pszLayer, pszAccess, psHooks );
+            return goSHPOpenLL ( pszLayer, pszAccess, psHooks );
         }
     }
 
@@ -645,14 +645,14 @@ SHPOpenLLEx( const char * pszLayer, const char * pszAccess, SAHooks *psHooks,
 }
 
 /************************************************************************/
-/*                              SHPRestoreSHX()                         */
+/*                              goSHPRestoreSHX()                         */
 /*                                                                      */
 /*      Restore .SHX file using associated .SHP file.                   */
 /*                                                                      */
 /************************************************************************/
 
 int SHPAPI_CALL
-SHPRestoreSHX ( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
+goSHPRestoreSHX ( const char * pszLayer, const char * pszAccess, SAHooks *psHooks ) {
 /* -------------------------------------------------------------------- */
 /*      Ensure the access string is one of the legal ones.  We          */
 /*      ensure the result string indicates binary to avoid common       */
@@ -818,13 +818,13 @@ SHPRestoreSHX ( const char * pszLayer, const char * pszAccess, SAHooks *psHooks 
 }
 
 /************************************************************************/
-/*                              SHPClose()                              */
+/*                              goSHPClose()                              */
 /*								       	*/
 /*	Close the .shp and .shx files.					*/
 /************************************************************************/
 
 void SHPAPI_CALL
-SHPClose(SHPHandle psSHP ) {
+goSHPClose(SHPHandle psSHP ) {
     if( psSHP == SHPLIB_NULLPTR )
         return;
 
@@ -832,7 +832,7 @@ SHPClose(SHPHandle psSHP ) {
 /*	Update the header if we have modified anything.			*/
 /* -------------------------------------------------------------------- */
     if( psSHP->bUpdated )
-	SHPWriteHeader( psSHP );
+	goSHPWriteHeader( psSHP );
 
 /* -------------------------------------------------------------------- */
 /*      Free all resources, and close files.                            */
@@ -862,14 +862,14 @@ SHPClose(SHPHandle psSHP ) {
 }
 
 /************************************************************************/
-/*                    SHPSetFastModeReadObject()                        */
+/*                    goSHPSetFastModeReadObject()                        */
 /************************************************************************/
 
-/* If setting bFastMode = TRUE, the content of SHPReadObject() is owned by the SHPHandle. */
-/* So you cannot have 2 valid instances of SHPReadObject() simultaneously. */
+/* If setting bFastMode = TRUE, the content of goSHPReadObject() is owned by the SHPHandle. */
+/* So you cannot have 2 valid instances of goSHPReadObject() simultaneously. */
 /* The SHPObject padfZ and padfM members may be NULL depending on the geometry */
 /* type. It is illegal to free at hand any of the pointer members of the SHPObject structure */
-void SHPAPI_CALL SHPSetFastModeReadObject( SHPHandle hSHP, int bFastMode )
+void SHPAPI_CALL goSHPSetFastModeReadObject( SHPHandle hSHP, int bFastMode )
 {
     if( bFastMode )
     {
@@ -884,13 +884,13 @@ void SHPAPI_CALL SHPSetFastModeReadObject( SHPHandle hSHP, int bFastMode )
 }
 
 /************************************************************************/
-/*                             SHPGetInfo()                             */
+/*                             goSHPGetInfo()                             */
 /*                                                                      */
 /*      Fetch general information about the shape file.                 */
 /************************************************************************/
 
 void SHPAPI_CALL
-SHPGetInfo(SHPHandle psSHP, int * pnEntities, int * pnShapeType,
+goSHPGetInfo(SHPHandle psSHP, int * pnEntities, int * pnShapeType,
            double * padfMinBound, double * padfMaxBound ) {
     if( psSHP == SHPLIB_NULLPTR )
         return;
@@ -911,30 +911,30 @@ SHPGetInfo(SHPHandle psSHP, int * pnEntities, int * pnShapeType,
 }
 
 /************************************************************************/
-/*                             SHPCreate()                              */
+/*                             goSHPCreate()                              */
 /*                                                                      */
 /*      Create a new shape file and return a handle to the open         */
 /*      shape file with read/write access.                              */
 /************************************************************************/
 
 SHPHandle SHPAPI_CALL
-SHPCreate( const char * pszLayer, int nShapeType ) {
+goSHPCreate( const char * pszLayer, int nShapeType ) {
     SAHooks sHooks;
 
-    SASetupDefaultHooks( &sHooks );
+    goSASetupDefaultHooks( &sHooks );
 
-    return SHPCreateLL( pszLayer, nShapeType, &sHooks );
+    return goSHPCreateLL( pszLayer, nShapeType, &sHooks );
 }
 
 /************************************************************************/
-/*                             SHPCreate()                              */
+/*                             goSHPCreate()                              */
 /*                                                                      */
 /*      Create a new shape file and return a handle to the open         */
 /*      shape file with read/write access.                              */
 /************************************************************************/
 
 SHPHandle SHPAPI_CALL
-SHPCreateLL( const char * pszLayer, int nShapeType, SAHooks *psHooks ) {
+goSHPCreateLL( const char * pszLayer, int nShapeType, SAHooks *psHooks ) {
 /* -------------------------------------------------------------------- */
 /*      Establish the byte order on this system.                        */
 /* -------------------------------------------------------------------- */
@@ -1059,7 +1059,7 @@ SHPCreateLL( const char * pszLayer, int nShapeType, SAHooks *psHooks ) {
     psHooks->FClose( fpSHP );
     psHooks->FClose( fpSHX );
 
-    return( SHPOpenLL( pszLayer, "r+b", psHooks ) );
+    return( goSHPOpenLL( pszLayer, "r+b", psHooks ) );
 }
 
 /************************************************************************/
@@ -1085,14 +1085,14 @@ static void _SHPSetBounds( uchar * pabyRec, SHPObject * psShape ) {
 }
 
 /************************************************************************/
-/*                         SHPComputeExtents()                          */
+/*                         goSHPComputeExtents()                          */
 /*                                                                      */
 /*      Recompute the extents of a shape.  Automatically done by        */
-/*      SHPCreateObject().                                              */
+/*      goSHPCreateObject().                                              */
 /************************************************************************/
 
 void SHPAPI_CALL
-SHPComputeExtents( SHPObject * psObject ) {
+goSHPComputeExtents( SHPObject * psObject ) {
 /* -------------------------------------------------------------------- */
 /*      Build extents for this object.                                  */
 /* -------------------------------------------------------------------- */
@@ -1119,14 +1119,14 @@ SHPComputeExtents( SHPObject * psObject ) {
 }
 
 /************************************************************************/
-/*                          SHPCreateObject()                           */
+/*                          goSHPCreateObject()                           */
 /*                                                                      */
 /*      Create a shape object.  It should be freed with                 */
-/*      SHPDestroyObject().                                             */
+/*      goSHPDestroyObject().                                             */
 /************************************************************************/
 
 SHPObject SHPAPI_CALL1(*)
-SHPCreateObject( int nSHPType, int nShapeId, int nParts,
+goSHPCreateObject( int nSHPType, int nShapeId, int nParts,
                  const int * panPartStart, const int * panPartType,
                  int nVertices, const double *padfX, const double *padfY,
                  const double * padfZ, const double * padfM ) {
@@ -1229,35 +1229,35 @@ SHPCreateObject( int nSHPType, int nShapeId, int nParts,
 /*      Compute the extents.                                            */
 /* -------------------------------------------------------------------- */
     psObject->nVertices = nVertices;
-    SHPComputeExtents( psObject );
+    goSHPComputeExtents( psObject );
 
     return( psObject );
 }
 
 /************************************************************************/
-/*                       SHPCreateSimpleObject()                        */
+/*                       goSHPCreateSimpleObject()                        */
 /*                                                                      */
 /*      Create a simple (common) shape object.  Destroy with            */
-/*      SHPDestroyObject().                                             */
+/*      goSHPDestroyObject().                                             */
 /************************************************************************/
 
 SHPObject SHPAPI_CALL1(*)
-SHPCreateSimpleObject( int nSHPType, int nVertices,
+goSHPCreateSimpleObject( int nSHPType, int nVertices,
                        const double * padfX, const double * padfY,
                        const double * padfZ ) {
-    return( SHPCreateObject( nSHPType, -1, 0, SHPLIB_NULLPTR, SHPLIB_NULLPTR,
+    return( goSHPCreateObject( nSHPType, -1, 0, SHPLIB_NULLPTR, SHPLIB_NULLPTR,
                              nVertices, padfX, padfY, padfZ, SHPLIB_NULLPTR ) );
 }
 
 /************************************************************************/
-/*                           SHPWriteObject()                           */
+/*                           goSHPWriteObject()                           */
 /*                                                                      */
 /*      Write out the vertices of a new structure.  Note that it is     */
 /*      only possible to write vertices at the end of the file.         */
 /************************************************************************/
 
 int SHPAPI_CALL
-SHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject ) {
+goSHPWriteObject(SHPHandle psSHP, int nShapeId, SHPObject * psObject ) {
     psSHP->bUpdated = TRUE;
 
 /* -------------------------------------------------------------------- */
@@ -1730,14 +1730,14 @@ static unsigned char* SHPReallocObjectBufIfNecessary ( SHPHandle psSHP,
 }
 
 /************************************************************************/
-/*                          SHPReadObject()                             */
+/*                          goSHPReadObject()                             */
 /*                                                                      */
 /*      Read the vertices, parts, and other non-attribute information	*/
 /*	for one shape.							*/
 /************************************************************************/
 
 SHPObject SHPAPI_CALL1(*)
-SHPReadObject( SHPHandle psSHP, int hEntity ) {
+goSHPReadObject( SHPHandle psSHP, int hEntity ) {
 /* -------------------------------------------------------------------- */
 /*      Validate the record/entity number.                              */
 /* -------------------------------------------------------------------- */
@@ -1949,7 +1949,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
         if( psSHP->psCachedObject->bFastModeReadObject )
         {
             psSHP->sHooks.Error( "Invalid read pattern in fast read mode. "
-                                 "SHPDestroyObject() should be called." );
+                                 "goSHPDestroyObject() should be called." );
             return SHPLIB_NULLPTR;
         }
 
@@ -1981,7 +1981,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nEntitySize);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 /* -------------------------------------------------------------------- */
@@ -2019,7 +2019,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nPoints, nParts);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2045,7 +2045,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nPoints, nParts, nEntitySize);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2082,7 +2082,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                     "Probably broken SHP file", nPoints, nParts, hEntity );
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2109,7 +2109,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                          hEntity, i, psShape->panPartStart[i], psShape->nVertices);
                 szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
                 psSHP->sHooks.Error( szErrorMsg );
-                SHPDestroyObject(psShape);
+                goSHPDestroyObject(psShape);
                 return SHPLIB_NULLPTR;
             }
             if (i > 0 && psShape->panPartStart[i] <= psShape->panPartStart[i-1])
@@ -2120,7 +2120,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                          hEntity, i, psShape->panPartStart[i], i - 1, psShape->panPartStart[i - 1]);
                 szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
                 psSHP->sHooks.Error( szErrorMsg );
-                SHPDestroyObject(psShape);
+                goSHPDestroyObject(psShape);
                 return SHPLIB_NULLPTR;
             }
         }
@@ -2230,7 +2230,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nEntitySize);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
         int32 nPoints;
@@ -2247,7 +2247,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nPoints);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2264,7 +2264,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nPoints, nEntitySize);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2296,7 +2296,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      "Probably broken SHP file", nPoints, hEntity );
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
 
@@ -2406,7 +2406,7 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
                      hEntity, nEntitySize);
             szErrorMsg[sizeof(szErrorMsg)-1] = '\0';
             psSHP->sHooks.Error( szErrorMsg );
-            SHPDestroyObject(psShape);
+            goSHPDestroyObject(psShape);
             return SHPLIB_NULLPTR;
         }
         memcpy( psShape->padfX, psSHP->pabyRec + 12, 8 );
@@ -2457,11 +2457,11 @@ SHPReadObject( SHPHandle psSHP, int hEntity ) {
 }
 
 /************************************************************************/
-/*                            SHPTypeName()                             */
+/*                            goSHPTypeName()                             */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-SHPTypeName( int nSHPType ) {
+goSHPTypeName( int nSHPType ) {
     switch( nSHPType )
     {
       case SHPT_NULL:
@@ -2512,11 +2512,11 @@ SHPTypeName( int nSHPType ) {
 }
 
 /************************************************************************/
-/*                          SHPPartTypeName()                           */
+/*                          goSHPPartTypeName()                           */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-SHPPartTypeName( int nPartType ) {
+goSHPPartTypeName( int nPartType ) {
     switch( nPartType )
     {
       case SHPP_TRISTRIP:
@@ -2543,11 +2543,11 @@ SHPPartTypeName( int nPartType ) {
 }
 
 /************************************************************************/
-/*                          SHPDestroyObject()                          */
+/*                          goSHPDestroyObject()                          */
 /************************************************************************/
 
 void SHPAPI_CALL
-SHPDestroyObject( SHPObject * psShape ) {
+goSHPDestroyObject( SHPObject * psShape ) {
     if( psShape == SHPLIB_NULLPTR )
         return;
 
@@ -2658,14 +2658,14 @@ static int SHPRewindIsInnerRing( const SHPObject * psObject,
 }
 
 /************************************************************************/
-/*                          SHPRewindObject()                           */
+/*                          goSHPRewindObject()                           */
 /*                                                                      */
 /*      Reset the winding of polygon objects to adhere to the           */
 /*      specification.                                                  */
 /************************************************************************/
 
 int SHPAPI_CALL
-SHPRewindObject( CPL_UNUSED SHPHandle hSHP,
+goSHPRewindObject( CPL_UNUSED SHPHandle hSHP,
                  SHPObject * psObject )
 {
 /* -------------------------------------------------------------------- */

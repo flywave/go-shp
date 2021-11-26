@@ -87,17 +87,17 @@ type BoundingBox struct {
 }
 
 func Open(file string) *ShapeFile {
-	hShape := SHPOpen(file, "rb")
+	hShape := goSHPOpen(file, "rb")
 	if hShape == nil {
 		panic("Cannot open shape file " + file)
 	}
 
-	hDb := DBFOpen(file, "rb")
+	hDb := goDBFOpen(file, "rb")
 	if hDb == nil {
 		panic("Cannot open db file " + file)
 	}
 
-	shapeType, nEntries, minBound, maxBound := SHPGetInfo(hShape)
+	shapeType, nEntries, minBound, maxBound := goSHPGetInfo(hShape)
 	box := BoundingBox{
 		Min: Point{
 			float64(minBound[0]),
@@ -113,8 +113,8 @@ func Open(file string) *ShapeFile {
 		},
 	}
 
-	fieldCount := DBFGetFieldCount(hDb)
-	recordCount := DBFGetRecordCount(hDb)
+	fieldCount := goDBFGetFieldCount(hDb)
+	recordCount := goDBFGetRecordCount(hDb)
 	if recordCount != nEntries {
 		panic("Shape count and db record count does not match.")
 	}
@@ -123,16 +123,16 @@ func Open(file string) *ShapeFile {
 }
 
 func (f *ShapeFile) Close() {
-	SHPClose(f.hShape)
-	DBFClose(f.hDb)
+	goSHPClose(f.hShape)
+	goDBFClose(f.hDb)
 }
 
 func (f *ShapeFile) Shape(shapeIndex int) *Shape {
 	if shapeIndex >= f.ShapeCount {
 		return nil
 	}
-	s := SHPReadObject(f.hShape, shapeIndex)
-	defer SHPDestroyObject(s)
+	s := goSHPReadObject(f.hShape, shapeIndex)
+	defer goSHPDestroyObject(s)
 
 	return &Shape{
 		Type: ShapeType(s.ShapeType),
@@ -186,14 +186,14 @@ func (f *ShapeFile) Shape(shapeIndex int) *Shape {
 		Attrs: func() map[string]interface{} {
 			attrs := map[string]interface{}{}
 			for j := 0; j < f.FieldCount; j++ {
-				name, type_, _, _ := DBFGetFieldInfo(f.hDb, j)
+				name, type_, _, _ := goDBFGetFieldInfo(f.hDb, j)
 				switch FieldType(type_) {
 				case String:
-					attrs[name] = string(DBFReadStringAttribute(f.hDb, shapeIndex, j))
+					attrs[name] = string(goDBFReadStringAttribute(f.hDb, shapeIndex, j))
 				case Integer, Logical:
-					attrs[name] = DBFReadIntegerAttribute(f.hDb, shapeIndex, j)
+					attrs[name] = goDBFReadIntegerAttribute(f.hDb, shapeIndex, j)
 				case Double:
-					attrs[name] = DBFReadDoubleAttribute(f.hDb, shapeIndex, j)
+					attrs[name] = goDBFReadDoubleAttribute(f.hDb, shapeIndex, j)
 				default:
 					panic("Unkown field type.")
 				}

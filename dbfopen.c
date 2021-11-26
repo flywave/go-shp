@@ -270,11 +270,11 @@ static bool DBFLoadRecord( DBFHandle psDBF, int iRecord ) {
 }
 
 /************************************************************************/
-/*                          DBFUpdateHeader()                           */
+/*                          goDBFUpdateHeader()                           */
 /************************************************************************/
 
 void SHPAPI_CALL
-DBFUpdateHeader( DBFHandle psDBF ) {
+goDBFUpdateHeader( DBFHandle psDBF ) {
     if( psDBF->bNoHeader )
         DBFWriteHeader( psDBF );
 
@@ -301,11 +301,11 @@ DBFUpdateHeader( DBFHandle psDBF ) {
 }
 
 /************************************************************************/
-/*                       DBFSetLastModifiedDate()                       */
+/*                       goDBFSetLastModifiedDate()                       */
 /************************************************************************/
 
 void SHPAPI_CALL
-DBFSetLastModifiedDate( DBFHandle psDBF, int nYYSince1900, int nMM, int nDD )
+goDBFSetLastModifiedDate( DBFHandle psDBF, int nYYSince1900, int nMM, int nDD )
 {
     psDBF->nUpdateYearSince1900 = nYYSince1900;
     psDBF->nUpdateMonth = nMM;
@@ -313,20 +313,20 @@ DBFSetLastModifiedDate( DBFHandle psDBF, int nYYSince1900, int nMM, int nDD )
 }
 
 /************************************************************************/
-/*                              DBFOpen()                               */
+/*                              goDBFOpen()                               */
 /*                                                                      */
 /*      Open a .dbf file.                                               */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFOpen( const char * pszFilename, const char * pszAccess )
+goDBFOpen( const char * pszFilename, const char * pszAccess )
 
 {
     SAHooks sHooks;
 
-    SASetupDefaultHooks( &sHooks );
+    goSASetupDefaultHooks( &sHooks );
 
-    return DBFOpenLL( pszFilename, pszAccess, &sHooks );
+    return goDBFOpenLL( pszFilename, pszAccess, &sHooks );
 }
 
 /************************************************************************/
@@ -348,13 +348,13 @@ static int DBFGetLenWithoutExtension(const char* pszBasename) {
 }
 
 /************************************************************************/
-/*                              DBFOpen()                               */
+/*                              goDBFOpen()                               */
 /*                                                                      */
 /*      Open a .dbf file.                                               */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFOpenLL( const char * pszFilename, const char * pszAccess, SAHooks *psHooks ) {
+goDBFOpenLL( const char * pszFilename, const char * pszAccess, SAHooks *psHooks ) {
 /* -------------------------------------------------------------------- */
 /*      We only allow the access strings "rb" and "r+".                  */
 /* -------------------------------------------------------------------- */
@@ -423,7 +423,7 @@ DBFOpenLL( const char * pszFilename, const char * pszAccess, SAHooks *psHooks ) 
         return SHPLIB_NULLPTR;
     }
 
-    DBFSetLastModifiedDate(psDBF, pabyBuf[1], pabyBuf[2], pabyBuf[3]);
+    goDBFSetLastModifiedDate(psDBF, pabyBuf[1], pabyBuf[2], pabyBuf[3]);
 
     psDBF->nRecords =
      pabyBuf[4]|(pabyBuf[5]<<8)|(pabyBuf[6]<<16)|((pabyBuf[7]&0x7f)<<24);
@@ -537,11 +537,11 @@ DBFOpenLL( const char * pszFilename, const char * pszAccess, SAHooks *psHooks ) 
         psDBF->panFieldOffset[psDBF->nFields-1] +
             psDBF->panFieldSize[psDBF->nFields-1] > psDBF->nRecordLength )
     {
-        DBFClose( psDBF );
+        goDBFClose( psDBF );
         return SHPLIB_NULLPTR;
     }
 
-    DBFSetWriteEndOfFileChar( psDBF, TRUE );
+    goDBFSetWriteEndOfFileChar( psDBF, TRUE );
 
     psDBF->bRequireNextWriteSeek = TRUE;
 
@@ -549,11 +549,11 @@ DBFOpenLL( const char * pszFilename, const char * pszAccess, SAHooks *psHooks ) 
 }
 
 /************************************************************************/
-/*                              DBFClose()                              */
+/*                              goDBFClose()                              */
 /************************************************************************/
 
 void SHPAPI_CALL
-DBFClose(DBFHandle psDBF)
+goDBFClose(DBFHandle psDBF)
 {
     if( psDBF == SHPLIB_NULLPTR )
         return;
@@ -571,7 +571,7 @@ DBFClose(DBFHandle psDBF)
 /*	write access.                					*/
 /* -------------------------------------------------------------------- */
     if( psDBF->bUpdated )
-        DBFUpdateHeader( psDBF );
+        goDBFUpdateHeader( psDBF );
 
 /* -------------------------------------------------------------------- */
 /*      Close, and free resources.                                      */
@@ -597,39 +597,39 @@ DBFClose(DBFHandle psDBF)
 }
 
 /************************************************************************/
-/*                             DBFCreate()                              */
+/*                             goDBFCreate()                              */
 /*                                                                      */
 /* Create a new .dbf file with default code page LDID/87 (0x57)         */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFCreate( const char * pszFilename ) {
-    return DBFCreateEx( pszFilename, "LDID/87" ); // 0x57
+goDBFCreate( const char * pszFilename ) {
+    return goDBFCreateEx( pszFilename, "LDID/87" ); // 0x57
 }
 
 /************************************************************************/
-/*                            DBFCreateEx()                             */
+/*                            goDBFCreateEx()                             */
 /*                                                                      */
 /*      Create a new .dbf file.                                         */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFCreateEx( const char * pszFilename, const char* pszCodePage ) {
+goDBFCreateEx( const char * pszFilename, const char* pszCodePage ) {
     SAHooks sHooks;
 
-    SASetupDefaultHooks( &sHooks );
+    goSASetupDefaultHooks( &sHooks );
 
-    return DBFCreateLL( pszFilename, pszCodePage , &sHooks );
+    return goDBFCreateLL( pszFilename, pszCodePage , &sHooks );
 }
 
 /************************************************************************/
-/*                             DBFCreate()                              */
+/*                             goDBFCreate()                              */
 /*                                                                      */
 /*      Create a new .dbf file.                                         */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFCreateLL( const char * pszFilename, const char * pszCodePage, SAHooks *psHooks ) {
+goDBFCreateLL( const char * pszFilename, const char * pszCodePage, SAHooks *psHooks ) {
 /* -------------------------------------------------------------------- */
 /*	Compute the base (layer) name.  If there is any extension	*/
 /*	on the passed in filename we will strip it off.			*/
@@ -715,9 +715,9 @@ DBFCreateLL( const char * pszFilename, const char * pszCodePage, SAHooks *psHook
         psDBF->pszCodePage = STATIC_CAST(char *, malloc( strlen(pszCodePage) + 1 ));
         strcpy( psDBF->pszCodePage, pszCodePage );
     }
-    DBFSetLastModifiedDate(psDBF, 95, 7, 26); /* dummy date */
+    goDBFSetLastModifiedDate(psDBF, 95, 7, 26); /* dummy date */
 
-    DBFSetWriteEndOfFileChar(psDBF, TRUE);
+    goDBFSetWriteEndOfFileChar(psDBF, TRUE);
 
     psDBF->bRequireNextWriteSeek = TRUE;
 
@@ -725,13 +725,13 @@ DBFCreateLL( const char * pszFilename, const char * pszCodePage, SAHooks *psHook
 }
 
 /************************************************************************/
-/*                            DBFAddField()                             */
+/*                            goDBFAddField()                             */
 /*                                                                      */
 /*      Add a field to a newly created .dbf or to an existing one       */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFAddField(DBFHandle psDBF, const char * pszFieldName,
+goDBFAddField(DBFHandle psDBF, const char * pszFieldName,
             DBFFieldType eType, int nWidth, int nDecimals ) {
     char chNativeType;
 
@@ -744,7 +744,7 @@ DBFAddField(DBFHandle psDBF, const char * pszFieldName,
     else
         chNativeType = 'N';
 
-    return DBFAddNativeFieldType( psDBF, pszFieldName, chNativeType,
+    return goDBFAddNativeFieldType( psDBF, pszFieldName, chNativeType,
                                   nWidth, nDecimals );
 }
 
@@ -768,14 +768,14 @@ static char DBFGetNullCharacter(char chType) {
 }
 
 /************************************************************************/
-/*                            DBFAddField()                             */
+/*                            goDBFAddField()                             */
 /*                                                                      */
 /*      Add a field to a newly created .dbf file before any records     */
 /*      are written.                                                    */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFAddNativeFieldType(DBFHandle psDBF, const char * pszFieldName,
+goDBFAddNativeFieldType(DBFHandle psDBF, const char * pszFieldName,
                       char chType, int nWidth, int nDecimals ) {
     /* make sure that everything is written in .dbf */
     if( !DBFFlushRecord( psDBF ) )
@@ -928,7 +928,7 @@ DBFAddNativeFieldType(DBFHandle psDBF, const char * pszFieldName,
 
     /* force update of header with new header, record length and new field */
     psDBF->bNoHeader = TRUE;
-    DBFUpdateHeader( psDBF );
+    goDBFUpdateHeader( psDBF );
 
     psDBF->nCurrentRecord = -1;
     psDBF->bCurrentRecordModified = FALSE;
@@ -1032,7 +1032,7 @@ static void *DBFReadAttribute(DBFHandle psDBF, int hEntity, int iField,
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFReadIntegerAttribute( DBFHandle psDBF, int iRecord, int iField ) {
+goDBFReadIntegerAttribute( DBFHandle psDBF, int iRecord, int iField ) {
     int	*pnValue = STATIC_CAST(int *, DBFReadAttribute( psDBF, iRecord, iField, 'I' ));
 
     if( pnValue == SHPLIB_NULLPTR )
@@ -1042,13 +1042,13 @@ DBFReadIntegerAttribute( DBFHandle psDBF, int iRecord, int iField ) {
 }
 
 /************************************************************************/
-/*                        DBFReadDoubleAttribute()                      */
+/*                        goDBFReadDoubleAttribute()                      */
 /*                                                                      */
 /*      Read a double attribute.                                        */
 /************************************************************************/
 
 double SHPAPI_CALL
-DBFReadDoubleAttribute( DBFHandle psDBF, int iRecord, int iField ) {
+goDBFReadDoubleAttribute( DBFHandle psDBF, int iRecord, int iField ) {
     double *pdValue = STATIC_CAST(double *, DBFReadAttribute( psDBF, iRecord, iField, 'N' ));
 
     if( pdValue == SHPLIB_NULLPTR )
@@ -1058,26 +1058,26 @@ DBFReadDoubleAttribute( DBFHandle psDBF, int iRecord, int iField ) {
 }
 
 /************************************************************************/
-/*                        DBFReadStringAttribute()                      */
+/*                        goDBFReadStringAttribute()                      */
 /*                                                                      */
 /*      Read a string attribute.                                        */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-DBFReadStringAttribute( DBFHandle psDBF, int iRecord, int iField )
+goDBFReadStringAttribute( DBFHandle psDBF, int iRecord, int iField )
 
 {
     return STATIC_CAST(const char *, DBFReadAttribute( psDBF, iRecord, iField, 'C' ) );
 }
 
 /************************************************************************/
-/*                        DBFReadLogicalAttribute()                     */
+/*                        goDBFReadLogicalAttribute()                     */
 /*                                                                      */
 /*      Read a logical attribute.                                       */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-DBFReadLogicalAttribute( DBFHandle psDBF, int iRecord, int iField )
+goDBFReadLogicalAttribute( DBFHandle psDBF, int iRecord, int iField )
 
 {
     return STATIC_CAST(const char *, DBFReadAttribute( psDBF, iRecord, iField, 'L' ) );
@@ -1128,7 +1128,7 @@ static bool DBFIsValueNULL( char chType, const char* pszValue ) {
 }
 
 /************************************************************************/
-/*                         DBFIsAttributeNULL()                         */
+/*                         goDBFIsAttributeNULL()                         */
 /*                                                                      */
 /*      Return TRUE if value for field is NULL.                         */
 /*                                                                      */
@@ -1136,8 +1136,8 @@ static bool DBFIsValueNULL( char chType, const char* pszValue ) {
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFIsAttributeNULL( DBFHandle psDBF, int iRecord, int iField ) {
-    const char *pszValue = DBFReadStringAttribute( psDBF, iRecord, iField );
+goDBFIsAttributeNULL( DBFHandle psDBF, int iRecord, int iField ) {
+    const char *pszValue = goDBFReadStringAttribute( psDBF, iRecord, iField );
 
     if( pszValue == SHPLIB_NULLPTR )
         return TRUE;
@@ -1146,33 +1146,33 @@ DBFIsAttributeNULL( DBFHandle psDBF, int iRecord, int iField ) {
 }
 
 /************************************************************************/
-/*                          DBFGetFieldCount()                          */
+/*                          goDBFGetFieldCount()                          */
 /*                                                                      */
 /*      Return the number of fields in this table.                      */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFGetFieldCount( DBFHandle psDBF )
+goDBFGetFieldCount( DBFHandle psDBF )
 
 {
     return( psDBF->nFields );
 }
 
 /************************************************************************/
-/*                         DBFGetRecordCount()                          */
+/*                         goDBFGetRecordCount()                          */
 /*                                                                      */
 /*      Return the number of records in this table.                     */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFGetRecordCount( DBFHandle psDBF )
+goDBFGetRecordCount( DBFHandle psDBF )
 
 {
     return( psDBF->nRecords );
 }
 
 /************************************************************************/
-/*                          DBFGetFieldInfo()                           */
+/*                          goDBFGetFieldInfo()                           */
 /*                                                                      */
 /*      Return any requested information about the field.               */
 /*      pszFieldName must be at least XBASE_FLDNAME_LEN_READ+1 (=12)    */
@@ -1180,7 +1180,7 @@ DBFGetRecordCount( DBFHandle psDBF )
 /************************************************************************/
 
 DBFFieldType SHPAPI_CALL
-DBFGetFieldInfo( DBFHandle psDBF, int iField, char * pszFieldName,
+goDBFGetFieldInfo( DBFHandle psDBF, int iField, char * pszFieldName,
                  int * pnWidth, int * pnDecimals )
 
 {
@@ -1343,7 +1343,7 @@ static bool DBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField,
 }
 
 /************************************************************************/
-/*                     DBFWriteAttributeDirectly()                      */
+/*                     goDBFWriteAttributeDirectly()                      */
 /*                                                                      */
 /*      Write an attribute record to the file, but without any          */
 /*      reformatting based on type.  The provided buffer is written     */
@@ -1351,7 +1351,7 @@ static bool DBFWriteAttribute(DBFHandle psDBF, int hEntity, int iField,
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteAttributeDirectly(DBFHandle psDBF, int hEntity, int iField,
+goDBFWriteAttributeDirectly(DBFHandle psDBF, int hEntity, int iField,
                               void * pValue ) {
 /* -------------------------------------------------------------------- */
 /*	Is this a valid record?						*/
@@ -1409,25 +1409,25 @@ DBFWriteAttributeDirectly(DBFHandle psDBF, int hEntity, int iField,
 }
 
 /************************************************************************/
-/*                      DBFWriteDoubleAttribute()                       */
+/*                      goDBFWriteDoubleAttribute()                       */
 /*                                                                      */
 /*      Write a double attribute.                                       */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteDoubleAttribute( DBFHandle psDBF, int iRecord, int iField,
+goDBFWriteDoubleAttribute( DBFHandle psDBF, int iRecord, int iField,
                          double dValue ) {
     return( DBFWriteAttribute( psDBF, iRecord, iField, STATIC_CAST(void *, &dValue) ) );
 }
 
 /************************************************************************/
-/*                      DBFWriteIntegerAttribute()                      */
+/*                      goDBFWriteIntegerAttribute()                      */
 /*                                                                      */
 /*      Write a integer attribute.                                      */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteIntegerAttribute( DBFHandle psDBF, int iRecord, int iField,
+goDBFWriteIntegerAttribute( DBFHandle psDBF, int iRecord, int iField,
                           int nValue ) {
     double dValue = nValue;
 
@@ -1435,13 +1435,13 @@ DBFWriteIntegerAttribute( DBFHandle psDBF, int iRecord, int iField,
 }
 
 /************************************************************************/
-/*                      DBFWriteStringAttribute()                       */
+/*                      goDBFWriteStringAttribute()                       */
 /*                                                                      */
 /*      Write a string attribute.                                       */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteStringAttribute( DBFHandle psDBF, int iRecord, int iField,
+goDBFWriteStringAttribute( DBFHandle psDBF, int iRecord, int iField,
                          const char * pszValue )
 
 {
@@ -1449,26 +1449,26 @@ DBFWriteStringAttribute( DBFHandle psDBF, int iRecord, int iField,
 }
 
 /************************************************************************/
-/*                      DBFWriteNULLAttribute()                         */
+/*                      goDBFWriteNULLAttribute()                         */
 /*                                                                      */
 /*      Write a string attribute.                                       */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteNULLAttribute( DBFHandle psDBF, int iRecord, int iField )
+goDBFWriteNULLAttribute( DBFHandle psDBF, int iRecord, int iField )
 
 {
     return( DBFWriteAttribute( psDBF, iRecord, iField, SHPLIB_NULLPTR ) );
 }
 
 /************************************************************************/
-/*                      DBFWriteLogicalAttribute()                      */
+/*                      goDBFWriteLogicalAttribute()                      */
 /*                                                                      */
 /*      Write a logical attribute.                                      */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteLogicalAttribute( DBFHandle psDBF, int iRecord, int iField,
+goDBFWriteLogicalAttribute( DBFHandle psDBF, int iRecord, int iField,
 		       const char lValue)
 
 {
@@ -1476,13 +1476,13 @@ DBFWriteLogicalAttribute( DBFHandle psDBF, int iRecord, int iField,
 }
 
 /************************************************************************/
-/*                         DBFWriteTuple()                              */
+/*                         goDBFWriteTuple()                              */
 /*									*/
 /*	Write an attribute record to the file.				*/
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFWriteTuple(DBFHandle psDBF, int hEntity, void * pRawTuple ) {
+goDBFWriteTuple(DBFHandle psDBF, int hEntity, void * pRawTuple ) {
 /* -------------------------------------------------------------------- */
 /*	Is this a valid record?						*/
 /* -------------------------------------------------------------------- */
@@ -1525,14 +1525,14 @@ DBFWriteTuple(DBFHandle psDBF, int hEntity, void * pRawTuple ) {
 }
 
 /************************************************************************/
-/*                            DBFReadTuple()                            */
+/*                            goDBFReadTuple()                            */
 /*                                                                      */
 /*      Read a complete record.  Note that the result is only valid     */
 /*      till the next record read for any reason.                       */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-DBFReadTuple(DBFHandle psDBF, int hEntity )
+goDBFReadTuple(DBFHandle psDBF, int hEntity )
 
 {
     if( hEntity < 0 || hEntity >= psDBF->nRecords )
@@ -1545,14 +1545,14 @@ DBFReadTuple(DBFHandle psDBF, int hEntity )
 }
 
 /************************************************************************/
-/*                          DBFCloneEmpty()                              */
+/*                          goDBFCloneEmpty()                              */
 /*                                                                      */
 /*      Read one of the attribute fields of a record.                   */
 /************************************************************************/
 
 DBFHandle SHPAPI_CALL
-DBFCloneEmpty(DBFHandle psDBF, const char * pszFilename ) {
-   DBFHandle newDBF = DBFCreateEx ( pszFilename, psDBF->pszCodePage );
+goDBFCloneEmpty(DBFHandle psDBF, const char * pszFilename ) {
+   DBFHandle newDBF = goDBFCreateEx ( pszFilename, psDBF->pszCodePage );
    if ( newDBF == SHPLIB_NULLPTR ) return SHPLIB_NULLPTR;
 
    newDBF->nFields = psDBF->nFields;
@@ -1579,16 +1579,16 @@ DBFCloneEmpty(DBFHandle psDBF, const char * pszFilename ) {
    newDBF->bWriteEndOfFileChar = psDBF->bWriteEndOfFileChar;
 
    DBFWriteHeader ( newDBF );
-   DBFClose ( newDBF );
+   goDBFClose ( newDBF );
 
-   newDBF = DBFOpen ( pszFilename, "rb+" );
+   newDBF = goDBFOpen ( pszFilename, "rb+" );
    newDBF->bWriteEndOfFileChar = psDBF->bWriteEndOfFileChar;
 
    return ( newDBF );
 }
 
 /************************************************************************/
-/*                       DBFGetNativeFieldType()                        */
+/*                       goDBFGetNativeFieldType()                        */
 /*                                                                      */
 /*      Return the DBase field type for the specified field.            */
 /*                                                                      */
@@ -1599,7 +1599,7 @@ DBFCloneEmpty(DBFHandle psDBF, const char * pszFilename ) {
 /************************************************************************/
 
 char SHPAPI_CALL
-DBFGetNativeFieldType( DBFHandle psDBF, int iField )
+goDBFGetNativeFieldType( DBFHandle psDBF, int iField )
 
 {
     if( iField >=0 && iField < psDBF->nFields )
@@ -1609,7 +1609,7 @@ DBFGetNativeFieldType( DBFHandle psDBF, int iField )
 }
 
 /************************************************************************/
-/*                          DBFGetFieldIndex()                          */
+/*                          goDBFGetFieldIndex()                          */
 /*                                                                      */
 /*      Get the index number for a field in a .dbf file.                */
 /*                                                                      */
@@ -1617,12 +1617,12 @@ DBFGetNativeFieldType( DBFHandle psDBF, int iField )
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
+goDBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
     char name[XBASE_FLDNAME_LEN_READ+1];
 
-    for( int i = 0; i < DBFGetFieldCount(psDBF); i++ )
+    for( int i = 0; i < goDBFGetFieldCount(psDBF); i++ )
     {
-        DBFGetFieldInfo( psDBF, i, name, SHPLIB_NULLPTR, SHPLIB_NULLPTR );
+        goDBFGetFieldInfo( psDBF, i, name, SHPLIB_NULLPTR, SHPLIB_NULLPTR );
         if(!STRCASECMP(pszFieldName,name))
             return(i);
     }
@@ -1630,13 +1630,13 @@ DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
 }
 
 /************************************************************************/
-/*                         DBFIsRecordDeleted()                         */
+/*                         goDBFIsRecordDeleted()                         */
 /*                                                                      */
 /*      Returns TRUE if the indicated record is deleted, otherwise      */
 /*      it returns FALSE.                                               */
 /************************************************************************/
 
-int SHPAPI_CALL DBFIsRecordDeleted( DBFHandle psDBF, int iShape ) {
+int SHPAPI_CALL goDBFIsRecordDeleted( DBFHandle psDBF, int iShape ) {
 /* -------------------------------------------------------------------- */
 /*      Verify selection.                                               */
 /* -------------------------------------------------------------------- */
@@ -1656,10 +1656,10 @@ int SHPAPI_CALL DBFIsRecordDeleted( DBFHandle psDBF, int iShape ) {
 }
 
 /************************************************************************/
-/*                        DBFMarkRecordDeleted()                        */
+/*                        goDBFMarkRecordDeleted()                        */
 /************************************************************************/
 
-int SHPAPI_CALL DBFMarkRecordDeleted( DBFHandle psDBF, int iShape,
+int SHPAPI_CALL goDBFMarkRecordDeleted( DBFHandle psDBF, int iShape,
                                       int bIsDeleted ) {
 /* -------------------------------------------------------------------- */
 /*      Verify selection.                                               */
@@ -1694,11 +1694,11 @@ int SHPAPI_CALL DBFMarkRecordDeleted( DBFHandle psDBF, int iShape,
 }
 
 /************************************************************************/
-/*                            DBFGetCodePage                            */
+/*                            goDBFGetCodePage                            */
 /************************************************************************/
 
 const char SHPAPI_CALL1(*)
-DBFGetCodePage(DBFHandle psDBF )
+goDBFGetCodePage(DBFHandle psDBF )
 {
     if( psDBF == SHPLIB_NULLPTR )
         return SHPLIB_NULLPTR;
@@ -1706,13 +1706,13 @@ DBFGetCodePage(DBFHandle psDBF )
 }
 
 /************************************************************************/
-/*                          DBFDeleteField()                            */
+/*                          goDBFDeleteField()                            */
 /*                                                                      */
 /*      Remove a field from a .dbf file                                 */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFDeleteField(DBFHandle psDBF, int iField) {
+goDBFDeleteField(DBFHandle psDBF, int iField) {
     if (iField < 0 || iField >= psDBF->nFields)
         return FALSE;
 
@@ -1772,7 +1772,7 @@ DBFDeleteField(DBFHandle psDBF, int iField) {
 
     /* force update of header with new header and record length */
     psDBF->bNoHeader = TRUE;
-    DBFUpdateHeader( psDBF );
+    goDBFUpdateHeader( psDBF );
 
     /* alloc record */
     char *pszRecord = STATIC_CAST(char *, malloc(sizeof(char) * nOldRecordLength));
@@ -1825,17 +1825,17 @@ DBFDeleteField(DBFHandle psDBF, int iField) {
 }
 
 /************************************************************************/
-/*                          DBFReorderFields()                          */
+/*                          goDBFReorderFields()                          */
 /*                                                                      */
 /*      Reorder the fields of a .dbf file                               */
 /*                                                                      */
 /* panMap must be exactly psDBF->nFields long and be a permutation      */
 /* of [0, psDBF->nFields-1]. This assumption will not be asserted in the*/
-/* code of DBFReorderFields.                                            */
+/* code of goDBFReorderFields.                                            */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFReorderFields( DBFHandle psDBF, int* panMap ) {
+goDBFReorderFields( DBFHandle psDBF, int* panMap ) {
     if ( psDBF->nFields == 0 )
         return TRUE;
 
@@ -1876,7 +1876,7 @@ DBFReorderFields( DBFHandle psDBF, int* panMap ) {
     {
         /* force update of header with new header and record length */
         psDBF->bNoHeader = TRUE;
-        DBFUpdateHeader( psDBF );
+        goDBFUpdateHeader( psDBF );
 
         /* alloc record */
         char *pszRecord = STATIC_CAST(char *, malloc(sizeof(char) * psDBF->nRecordLength));
@@ -1944,13 +1944,13 @@ DBFReorderFields( DBFHandle psDBF, int* panMap ) {
 
 
 /************************************************************************/
-/*                          DBFAlterFieldDefn()                         */
+/*                          goDBFAlterFieldDefn()                         */
 /*                                                                      */
 /*      Alter a field definition in a .dbf file                         */
 /************************************************************************/
 
 int SHPAPI_CALL
-DBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
+goDBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
                     char chType, int nWidth, int nDecimals ) {
     if (iField < 0 || iField >= psDBF->nFields)
         return FALSE;
@@ -2024,7 +2024,7 @@ DBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
 
     /* force update of header with new header and record length */
     psDBF->bNoHeader = TRUE;
-    DBFUpdateHeader( psDBF );
+    goDBFUpdateHeader( psDBF );
 
     bool errorAbort = false;
 
@@ -2188,10 +2188,10 @@ DBFAlterFieldDefn( DBFHandle psDBF, int iField, const char * pszFieldName,
 }
 
 /************************************************************************/
-/*                    DBFSetWriteEndOfFileChar()                        */
+/*                    goDBFSetWriteEndOfFileChar()                        */
 /************************************************************************/
 
-void SHPAPI_CALL DBFSetWriteEndOfFileChar( DBFHandle psDBF, int bWriteFlag )
+void SHPAPI_CALL goDBFSetWriteEndOfFileChar( DBFHandle psDBF, int bWriteFlag )
 {
     psDBF->bWriteEndOfFileChar = bWriteFlag;
 }
